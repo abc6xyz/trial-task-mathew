@@ -1,0 +1,52 @@
+// This is Prisma schema file.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+}
+
+model User {
+  id                    Int               @id @default(autoincrement())
+  email                 String            @unique     // both indexed and unique
+  password              String
+  address               String
+  layouts               Layout[]
+  wallets               Wallet[]
+}
+
+model Wallet {
+  id                    Int               @id @default(autoincrement())
+  address               String            @unique
+  name                  String
+  user_id               Int
+  user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Layout {
+  layout_id             Int               @id @default(autoincrement())
+  user_id               Int
+  layout_name           String
+  user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  widgets               Layout_Widgets[]
+}
+
+model Widget {
+  widget_id             Int               @id @default(autoincrement())
+  widget_name           String
+  widget_description    String?
+  layouts               Layout_Widgets[]
+}
+
+model Layout_Widgets {
+  layout_id             Int
+  widget_id             Int
+  widget_json           Json
+
+  @@id([layout_id, widget_id])
+  layout                Layout            @relation(fields: [layout_id], references: [layout_id], onDelete: Cascade)
+  widget                Widget            @relation(fields: [widget_id], references: [widget_id], onDelete: Cascade)
+}
