@@ -48,7 +48,7 @@ export async function getUserByWallet(wallet: `0x${string}`): Promise<any> {
       }
     });
 
-    return { success:true, data:walletData?.user as User }
+    return { success:walletData?.user?true:false, data:walletData?.user as User }
   } catch (error) {
     if (error instanceof PrismaClientInitializationError){
       return { success:false, data:"database" }
