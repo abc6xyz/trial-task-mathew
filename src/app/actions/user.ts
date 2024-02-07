@@ -28,7 +28,7 @@ export async function getUserByEmail(email: string): Promise<any> {
         email,
       },
     })
-    return {success:true, data:user}
+    return {success:user?true:false, data:user}
   } catch (error) {
     if (error instanceof PrismaClientInitializationError){
       return { success:false, data:"database" }
