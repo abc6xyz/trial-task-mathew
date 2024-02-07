@@ -73,7 +73,7 @@ export default function Header() {
         })
       }
     }
-  },[isConnected, session]);
+  },[isConnected, address, connector, session]);
 
   function handleSignOut(): void {
     disconnect()
