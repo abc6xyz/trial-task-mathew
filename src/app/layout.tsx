@@ -1,6 +1,5 @@
 import "./globals.css";
 
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { authConfig } from "@/app/api/auth/[...nextauth]/auth-config";
 import { getServerSession } from "next-auth";
@@ -10,11 +9,6 @@ import Web3Providers from "@/providers/web3Provider";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Trial Task Mathew Lazarte",
-  description: "Trial task at Onchain venture",
-};
 
 export default async function RootLayout({
   children,
