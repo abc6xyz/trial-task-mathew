@@ -1,0 +1,27 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import AuthForm from "./forms/auth"
+
+export type AuthDialogProps = {
+  openAuth: boolean,
+  setOpenAuth: (x: boolean) => void,
+}
+
+export const AuthDialog = () => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Sign In</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <AuthForm />
+      </DialogContent>
+    </Dialog>
+  )
+}
