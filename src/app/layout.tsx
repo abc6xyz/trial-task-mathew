@@ -16,7 +16,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authConfig);
-  console.log("session : ", session)
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>

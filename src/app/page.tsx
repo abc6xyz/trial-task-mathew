@@ -1,6 +1,6 @@
 "use client"
 
-import Header from "@/components/layouts/header";
+import Header from "./layouts/header";
  
 export default function Home() {
   return (

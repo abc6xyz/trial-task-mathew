@@ -10,25 +10,19 @@ export const authConfig: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  pages: {
-    signIn: "/signin",
-    signOut: "/signout",
-  },
   providers: [
     Credentials({
+      id: "credentials",
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        encrypt: { label: "Encrypt", type: "boolean" },
       },
       async authorize(credentials) {
         try
         {
           if (!credentials?.email || !credentials?.password)
             return null
-
-          prisma.$connect()
           
           const existingUser = await prisma.user.findUnique({
             where: { email: credentials?.email },
@@ -38,7 +32,7 @@ export const authConfig: NextAuthOptions = {
             return null
           }
 
-          const passwordMatch = credentials.encrypt?credentials?.password:generateHash(credentials?.password) === existingUser.password
+          const passwordMatch = generateHash(credentials?.password) === existingUser.password
           if (!passwordMatch) {
             return null
           }
@@ -53,12 +47,47 @@ export const authConfig: NextAuthOptions = {
         }
       },
     }),
+    Credentials({
+      id: 'wallet',
+      name: 'wallet',
+      credentials: {
+        wallet: { label: 'Wallet Address', type: 'text' },
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials?.wallet)
+            return null
+
+          const walletData = await prisma.wallet.findUnique({
+            where: {
+              address: credentials?.wallet
+            },
+            include: {
+              user: true
+            }
+          });
+
+          if (!walletData?.user) {
+            return null
+          }
+
+          return {
+            id: `${walletData?.user.id}`,
+            email: walletData?.user.email,
+            wallet: credentials.wallet
+          }
+        } catch (error) {
+          return null
+        }
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         return {
           ...token,
+          id: user.id,
           email: user.email,
         };
       }
@@ -69,6 +98,7 @@ export const authConfig: NextAuthOptions = {
         ...session,
         user: {
           ...session.user,
+          id: token.id,
           email: token.email,
         },
       };

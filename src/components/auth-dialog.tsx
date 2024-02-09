@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import AuthForm from "./forms/auth"
+import AuthForm from "@/components/forms/auth/index"
 
 export type AuthDialogProps = {
   openAuth: boolean,

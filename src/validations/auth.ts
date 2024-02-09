@@ -11,14 +11,6 @@ export const signInFormWithPasswordSchema = z.object({
 
 export type SignInWithPasswordFormInput = z.infer<typeof signInFormWithPasswordSchema>
 
-export type SignInWithPasswordMessage = 
-| "invalid-input"
-| "not-registered"
-| "incorrect-password"
-| "success"
-| "fail"
-| "database-error"
-
 export const signUpFormWithPasswordSchema = z.object({
   email: z.string().email({
     message: "Invalid email address."

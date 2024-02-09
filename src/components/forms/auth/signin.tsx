@@ -19,8 +19,8 @@ import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
 import { z } from "zod"
-import { signIn } from "next-auth/react"
 import { signInFormWithPasswordSchema as formSchema } from "@/validations/auth"
+import { signInByPassword } from "@/lib/utils"
 
 export function SignInWithPasswordForm(): JSX.Element {
   const { toast } = useToast()
@@ -36,29 +36,16 @@ export function SignInWithPasswordForm(): JSX.Element {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      try {
-        const data = await signIn("credentials", {
-          email: values.email,
-          password: values.password,
-          encrypt: false,
-          redirect: false
-        })
-        if (data?.ok){
-          toast({
-            title: "Success!",
-            description: "You are now signed in",
-          })
-        }
-        else
-          toast({
-            title: "Error signing in with password",
-            description: "Please try again",
-            variant: "destructive",
-          })
-      } catch (error) {
-        console.error(error)
+      const res = await signInByPassword(values.email, values.password)
+      if ( res === "success" ) {
         toast({
-          title: "Something went wrong",
+          title: "Success!",
+          description: "You are now signed in",
+        })
+      } 
+      else {
+        toast({
+          title: "Error signing in with password",
           description: "Please try again",
           variant: "destructive",
         })
