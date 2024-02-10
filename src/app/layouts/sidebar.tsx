@@ -6,19 +6,20 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-import React, { useState } from "react";
+import React, { useDeferredValue, useEffect, useState } from "react";
 import { SideNav } from "./side-nav";
 
 import { useSidebar } from "@/hooks/useSidebar";
 import { ChevronRightIcon } from "@radix-ui/react-icons"
-import { DashboardDialog } from "@/components/dialog/dashboard"
-
+import { DashboardDialog } from "@/components/dialogs/dashboard"
+import { useDashboard } from "@/providers/dashboardProvider"
 
 export default function Sidebar() {
   const pathname = usePathname()
   const { isOpen, toggle } = useSidebar()
   const [ status, setStatus ] = useState(false)
-
+  const { layouts } = useDashboard()
+  
   const handleToggle = () => {
     setStatus(true);
     toggle();
@@ -45,7 +46,7 @@ export default function Sidebar() {
           <div className="mt-3 space-y-1">
             <DashboardDialog />
             <SideNav
-              items={[]}
+              items={layouts}
             />
           </div>
         </div>

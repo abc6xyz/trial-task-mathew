@@ -3,6 +3,7 @@ import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import { generateHash } from "@/lib/utils";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 export const authConfig: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
@@ -83,7 +84,7 @@ export const authConfig: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
         return {
           ...token,
@@ -93,7 +94,7 @@ export const authConfig: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       return {
         ...session,
         user: {
@@ -104,5 +105,5 @@ export const authConfig: NextAuthOptions = {
       };
     },
   },
+  adapter: PrismaAdapter(prisma),
 };
-

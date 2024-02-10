@@ -5,7 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useAccount, useDisconnect } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { AuthDialog } from "@/components/dialog/auth";
+import { AuthDialog } from "@/components/dialogs/auth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast"
 import { signInByWallet } from "@/lib/utils";
@@ -17,6 +17,7 @@ export default function Header() {
   const { isConnected, address, connector } = useAccount()
   const { disconnect } = useDisconnect()
   const { data: session } = useSession()
+  
   useEffect(()=>{
     const signInByWallet_ = async (address : string) => {
       const res = await signInByWallet(address)
