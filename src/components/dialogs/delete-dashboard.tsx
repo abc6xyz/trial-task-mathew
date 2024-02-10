@@ -72,7 +72,7 @@ export function DeleteDashboard() {
           <DialogTitle>Delete dashboard</DialogTitle>
           <DialogDescription>
             <div className="flex">
-              To confirm, type "<div className="text-red-500">dashboard/{layout_name}</div>" in the box below
+              To confirm, type &quot;<div className="text-red-500">dashboard/{layout_name}</div>&quot; in the box below
             </div>
           </DialogDescription>
         </DialogHeader>
