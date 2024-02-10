@@ -69,3 +69,17 @@ export async function setUserLayout(userEmail: string | null | undefined, layout
     return false
   }
 }
+
+export async function deleteUserLayout(layout_id: number): Promise<boolean> {
+  try {
+    const deletedLayout = await prisma.layout.delete({
+      where: {
+        layout_id: layout_id,
+      },
+    });
+    if (deletedLayout) return true
+    return false
+  } catch (error) {
+    return false
+  }
+}

@@ -3,6 +3,7 @@ import type { LayoutsIF } from 'react-dashboard-pro';
 import Dashboard from 'react-dashboard-pro';
 import allWidgets from '@/components/widgets';
 import { useDashboard } from '@/providers/dashboardProvider';
+import { DeleteDashboard } from '@/components/dialogs/delete-dashboard';
 
 export default function DashboardPro() {
   const [layout, setLayout] = useState<LayoutsIF>([]);
@@ -20,6 +21,9 @@ export default function DashboardPro() {
             <h2 className="text-3xl font-bold tracking-tight">
               {layouts?.find(layout => layout?.layout_id === selectedLayout)?.layout_name}
             </h2>
+            <div className="flex items-center space-x-2">
+              <DeleteDashboard />
+            </div>
           </div>
           <div className='space-y-4'>
             <Dashboard
