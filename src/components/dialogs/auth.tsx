@@ -8,11 +8,6 @@ import {
 } from "@/components/ui/dialog"
 import AuthForm from "@/components/forms/auth/index"
 
-export type AuthDialogProps = {
-  openAuth: boolean,
-  setOpenAuth: (x: boolean) => void,
-}
-
 export const AuthDialog = () => {
   return (
     <Dialog>
