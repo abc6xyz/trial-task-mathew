@@ -21,7 +21,7 @@ import { toast } from "../ui/use-toast"
 
 export function DeleteDashboard() {
   const [ open, setOpen ] = useState(false)
-  const { selectedLayout, layouts } = useDashboard()
+  const { selectedLayout, layouts, fetchLayouts } = useDashboard()
   const [isPending, startTransition] = useTransition()
 
   const layout_name = 
@@ -45,6 +45,8 @@ export function DeleteDashboard() {
     startTransition(async () => {
       const res = await deleteUserLayout(selectedLayout)
       if ( res ) {
+        setOpen(false)
+        fetchLayouts()
         toast({
           title: "Deleted!",
           description: "The dashboard successfully has been deleted",
