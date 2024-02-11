@@ -18,7 +18,6 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { isOpen, toggle } = useSidebar()
   const [ status, setStatus ] = useState(false)
-  const { layouts } = useDashboard()
   
   const handleToggle = () => {
     setStatus(true);
@@ -45,9 +44,7 @@ export default function Sidebar() {
         <div className="px-3 py-2">
           <div className="mt-3 space-y-1">
             <DashboardDialog />
-            <SideNav
-              items={layouts}
-            />
+            <SideNav />
           </div>
         </div>
       </div>
