@@ -8,7 +8,6 @@ import { useDashboard } from "@/providers/dashboardProvider";
 export const MobileSidebar = () => {
   const [open, setOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const { layouts } = useDashboard()
   
   useEffect(() => {
     setIsMounted(true);
@@ -29,7 +28,7 @@ export const MobileSidebar = () => {
         <SheetContent side="left" className="w-72">
           <div className="px-1 py-6 pt-16">
             <DashboardDialog />
-            <SideNav items={layouts} />
+            <SideNav />
           </div>
         </SheetContent>
       </Sheet>

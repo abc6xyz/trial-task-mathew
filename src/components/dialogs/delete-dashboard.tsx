@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useDashboard } from "@/providers/dashboardProvider"
-import { useEffect, useMemo, useState, useTransition } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { Icons } from "../icons"
-import { Form, useForm } from "react-hook-form"
-import { FormControl, FormField, FormItem, FormMessage } from "../ui/form"
+import { useForm } from "react-hook-form"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { deleteUserLayout } from "@/app/actions/layout"
@@ -21,16 +21,15 @@ import { toast } from "../ui/use-toast"
 
 export function DeleteDashboard() {
   const [ open, setOpen ] = useState(false)
-  const { selectedLayout, layouts, fetchLayouts } = useDashboard()
+  const { selectedLayout, layouts, fetchLayouts, selectLayout } = useDashboard()
   const [isPending, startTransition] = useTransition()
 
-  const layout_name = 
-    layouts?.find(layout => layout?.layout_id === selectedLayout)?.layout_name
+  const layout_name = useMemo(()=>layouts[selectedLayout]?.layout_name,[selectedLayout, layouts])
   
-  const formSchema = z.object({
+  const formSchema = useMemo(()=>z.object({
     dashboard: z.string().refine(data => data === "dashboard/"+layout_name, {
-      message: `The string must be "dashboard/+${layout_name}"`,
-  })})
+      message: `The string must be "dashboard/${layout_name}"`,
+  })}),[layout_name])
     
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,10 +39,9 @@ export function DeleteDashboard() {
   })
   
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
     if (values.dashboard !== "dashboard/"+layout_name) return
     startTransition(async () => {
-      const res = await deleteUserLayout(selectedLayout)
+      const res = await deleteUserLayout(layouts[selectedLayout]?.layout_id)
       if ( res ) {
         setOpen(false)
         fetchLayouts()
@@ -71,9 +69,7 @@ export function DeleteDashboard() {
         <DialogHeader>
           <DialogTitle>Delete dashboard</DialogTitle>
           <DialogDescription>
-            <div className="flex">
-              To confirm, type &quot;<div className="text-red-500">dashboard/{layout_name}</div>&quot; in the box below
-            </div>
+            <p>To confirm, type &quot;<span className="text-red-500">dashboard/{layout_name}</span>&quot; in the box below.</p>
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -92,6 +88,7 @@ export function DeleteDashboard() {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

@@ -10,18 +10,15 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { useDashboard } from "@/providers/dashboardProvider";
 import { Layout } from "@prisma/client";
 
-interface SideNavProps {
-  items: Layout[];  
-}
-
-export function SideNav({ items }: SideNavProps) {
+export function SideNav() {
   const path = usePathname();
   const { isOpen } = useSidebar();
-  const { selectLayout, selectedLayout } = useDashboard();
+  const { layouts, selectLayout, selectedLayout } = useDashboard();
 
   return (
     <nav className="space-y-2">
-      {items.map((item) =>
+      { layouts.length > 0 ?
+      layouts.map((item, index) =>
         (
           <Link
             key={item.layout_id}
@@ -29,9 +26,9 @@ export function SideNav({ items }: SideNavProps) {
             className={cn(
               buttonVariants({ variant: 'ghost' }),
               'group relative flex h-12 justify-start',
-              selectedLayout === item.layout_id && 'bg-muted font-bold hover:bg-muted',
+              selectedLayout === index && 'bg-muted font-bold hover:bg-muted',
             )}
-            onClick={()=>selectLayout(item.layout_id)}
+            onClick={()=>selectLayout(index)}
           >
             <Icons.dashboard className={cn('h-5 w-5')} />
             <span
@@ -44,7 +41,7 @@ export function SideNav({ items }: SideNavProps) {
             </span>
           </Link>
         ),
-      )}
+      ):<></>}
     </nav>
   );
 }

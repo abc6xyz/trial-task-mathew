@@ -22,7 +22,7 @@ interface DashboardProviderProps {
 
 export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }) => {
   const [ layouts, setLayouts ] = useState<Layout[]>([])
-  const [ selectedLayout, setSelectedLayout ] = useState<number>(0)
+  const [ selectedLayout, setSelectedLayout ] = useState<number>(-1)
   const [ widgets, setWidgets ] = useState<Layout_Widgets[]>([])
 
   const { data: session } = useSession()  
@@ -32,13 +32,16 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
       const layouts = await getUserLayouts(session?.user?.email)
       console.log("-- user layout --\n", layouts)
       setLayouts(layouts)
+      if (!layouts.length){
+        setSelectedLayout(-1)
+      }
     }
   }
 
   const selectLayout = async (layout_id: number) => {
     if (session) {
       setSelectedLayout(layout_id)
-      const widgets = await getUserLayoutWidgets(layout_id)
+      const widgets = await getUserLayoutWidgets(layouts[layout_id]?.layout_id)
       console.log("-- user layout widgets --\n", widgets)
       setWidgets(widgets)
     }
