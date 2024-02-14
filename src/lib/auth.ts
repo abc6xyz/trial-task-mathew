@@ -1,13 +1,13 @@
 
-import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { NextAuthOptions } from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { generateHash } from "@/lib/utils";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
-export const authConfig: NextAuthOptions = {
+export const authOption: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXT_AUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -39,7 +39,7 @@ export const authConfig: NextAuthOptions = {
           }
           
           return {
-            id: `${existingUser.id}`,
+            id: existingUser.id,
             email: existingUser.email,
           };
         } catch (error) {
@@ -73,7 +73,7 @@ export const authConfig: NextAuthOptions = {
           }
 
           return {
-            id: `${walletData?.user.id}`,
+            id: walletData?.user.id,
             email: walletData?.user.email,
             wallet: credentials.wallet
           }

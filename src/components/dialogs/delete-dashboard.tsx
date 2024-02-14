@@ -9,22 +9,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { useDashboard } from "@/providers/dashboardProvider"
 import { useMemo, useState, useTransition } from "react"
 import { Icons } from "../icons"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { deleteUserLayout } from "@/app/actions/layout"
 import { toast } from "../ui/use-toast"
+import { useSidebar } from "@/hooks/useSidebar"
 
 export function DeleteDashboard() {
   const [ open, setOpen ] = useState(false)
-  const { selectedLayout, layouts, fetchLayouts, selectLayout } = useDashboard()
+  const { selectedLayout, layouts, setLayouts, setSelectedLayout } = useSidebar()
   const [isPending, startTransition] = useTransition()
 
-  const layout_name = useMemo(()=>layouts[selectedLayout]?.layout_name,[selectedLayout, layouts])
+  const layout_name = useMemo(()=>layouts.find((layout)=>selectedLayout===layout.layout_id)?.layout_name,[selectedLayout, layouts])
   
   const formSchema = useMemo(()=>z.object({
     dashboard: z.string().refine(data => data === "dashboard/"+layout_name, {
@@ -39,22 +38,31 @@ export function DeleteDashboard() {
   })
   
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (values.dashboard !== "dashboard/"+layout_name) return
     startTransition(async () => {
-      const res = await deleteUserLayout(layouts[selectedLayout]?.layout_id)
-      if ( res ) {
+      const response = await fetch('/api/layout/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data:{
+            layoutId: selectedLayout,
+          }}),
+      })
+      const result = await response.json()
+      if ('error' in result){
+        toast({
+          title: result['error'],
+        })
+      } else {
+        const resp = await fetch('/api/layout')
+        const resu = await resp.json();
+        setLayouts(resu['data'])
+        setSelectedLayout(0)
         setOpen(false)
-        fetchLayouts()
         toast({
           title: "Deleted!",
           description: "The dashboard successfully has been deleted",
-        })
-      } 
-      else {
-        toast({
-          title: "Fialed to delete dashboard",
-          description: "Please try again",
-          variant: "destructive",
         })
       }
     })

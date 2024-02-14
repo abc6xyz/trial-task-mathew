@@ -42,11 +42,11 @@ model Widget {
 }
 
 model Layout_Widgets {
+  layout_widget_id      Int               @id @default(autoincrement())
   layout_id             Int
   widget_id             Int
   widget_json           Json
 
-  @@id([layout_id, widget_id])
   layout                Layout            @relation(fields: [layout_id], references: [layout_id], onDelete: Cascade)
   widget                Widget            @relation(fields: [widget_id], references: [widget_id], onDelete: Cascade)
 }

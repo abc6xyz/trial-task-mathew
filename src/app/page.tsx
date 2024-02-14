@@ -1,30 +1,43 @@
 "use client"
 
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Header from "./layouts/header";
 import Sidebar from "./layouts/sidebar";
 import DashboardPro from "./layouts/dashboard";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-import { useDashboard } from "@/providers/dashboardProvider";
+import { useSidebar } from "@/hooks/useSidebar";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Home() {
-  const { data:session } = useSession()
-  const { fetchLayouts } = useDashboard()
+  const { status } = useSession()
+  const { setLayouts, selectedLayout } = useSidebar()
 
-  useEffect(() => {
-    if (session) {
+  useEffect(()=>{
+    const fetchLayouts = async () => {
+      const response = await fetch('/api/layout')
+      const result = await response.json()
+      if ( 'error' in result ) {
+        toast({
+          title: result['error']
+        })
+      } else {
+        setLayouts(result['data'])
+      }
+    }
+    if (status === 'authenticated') {
       fetchLayouts()
     }
-  },[session])
-
+  },[status])
   return (
     <div>
       <Header />
       {
-        session?
+        status === "authenticated"?
         <div className="w-full flex">
           <Sidebar />
-          <DashboardPro />
+          { selectedLayout &&
+            <DashboardPro />
+          }
         </div>
         :
         <></>

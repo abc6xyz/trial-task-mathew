@@ -1,11 +1,10 @@
 import "./globals.css";
 
 import { Inter } from "next/font/google";
-import AuthProvider from "@/providers/sessionProvider";
 import ThemeProvider from "@/providers/themeProvider";
+import SessionProvider from "@/providers/sessionProvider";
 import Web3Providers from "@/providers/web3Provider";
 import { Toaster } from "@/components/ui/toaster";
-import { DashboardProvider } from "@/providers/dashboardProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,17 +15,16 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-      <AuthProvider>
+      <body>
+      {/* <body className={inter.className}> */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Web3Providers>
-            <DashboardProvider>
+          <SessionProvider>
+            <Web3Providers>
               <main>{children}</main>
               <Toaster />
-            </DashboardProvider>
-          </Web3Providers>
+            </Web3Providers>
+          </SessionProvider>
         </ThemeProvider>
-      </AuthProvider>
       </body>
     </html>
   );

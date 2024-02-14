@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { MenuIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SideNav } from "./side-nav";
 import { DashboardDialog } from "@/components/dialogs/dashboard";
-import { useDashboard } from "@/providers/dashboardProvider";
+import { SideNav } from "./side-nav";
 
 export const MobileSidebar = () => {
   const [open, setOpen] = useState(false);
