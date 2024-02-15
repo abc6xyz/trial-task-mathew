@@ -2,23 +2,18 @@
 
 import Link from "next/link";
 
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { useSidebar } from "@/hooks/useSidebar";
-import { useDashboard } from "@/providers/dashboardProvider";
-import { Layout } from "@prisma/client";
 
 export function SideNav() {
-  const path = usePathname();
-  const { isOpen } = useSidebar();
-  const { layouts, selectLayout, selectedLayout } = useDashboard();
+  const { isOpen, layouts, selectedLayout, setSelectedLayout } = useSidebar();
 
   return (
     <nav className="space-y-2">
       { layouts.length > 0 ?
-      layouts.map((item, index) =>
+      layouts.map((item) =>
         (
           <Link
             key={item.layout_id}
@@ -26,9 +21,9 @@ export function SideNav() {
             className={cn(
               buttonVariants({ variant: 'ghost' }),
               'group relative flex h-12 justify-start',
-              selectedLayout === index && 'bg-muted font-bold hover:bg-muted',
+              selectedLayout === item.layout_id && 'bg-muted font-bold hover:bg-muted',
             )}
-            onClick={()=>selectLayout(index)}
+            onClick={()=>setSelectedLayout(item.layout_id)}
           >
             <Icons.dashboard className={cn('h-5 w-5')} />
             <span

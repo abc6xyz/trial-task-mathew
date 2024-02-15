@@ -23,54 +23,67 @@ import { WidgetsPreview } from "../widgets-preview"
 import { Label } from "@radix-ui/react-label"
 import { toast } from "../ui/use-toast"
 import { useEffect, useState, useTransition } from "react"
-import { getAllWidgets } from "@/app/actions/widget"
-import { WidgetItem } from "@/validations/widget"
+import { Widget } from "@prisma/client"
 import { Skeleton } from "../ui/skeleton"
-import { setUserLayout } from "@/app/actions/layout"
-import { useSession } from "next-auth/react"
 import { Icons } from "../icons"
-import { useDashboard } from "@/providers/dashboardProvider"
 
 const formSchema = z.object({
   title: z.string().min(1),
-  items: z.array(z.number()).refine((value) => value.some((item) => item), {
-    message: "You have to select at least one item.",
+  widgets: z.array(z.number()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one widget.",
   }),
 })
 
 export const DashboardDialog = () => {
-  const { isOpen } = useSidebar()
+  const { isOpen, setSelectedLayout, setLayouts } = useSidebar()
   const [ open, setOpen ] = useState(false)
-  const [ widgets, setWidgets ] = useState<WidgetItem[] | null>(null)
-  const { data: session } = useSession()
-  const [isPending, startTransition] = useTransition()
-  const { fetchLayouts } = useDashboard()
+  const [ widgets, setWidgets ] = useState<Widget[] | null>(null)
+  const [ isPending, startTransition ] = useTransition()
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      items: [],
+      widgets: [],
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // })
     startTransition(async () => {
-      const res = await setUserLayout(session?.user?.email, values.title, values.items)
-      if (res) {
-        setOpen(false)
-        fetchLayouts()
+      try {
+        const response = await fetch('/api/layout/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data:{
+              title: values.title,
+              widgets: values.widgets,
+            }}),
+        });
+        const result = await response.json();
+        if ('error' in result){
+          toast({
+            title: result['error'],
+          })
+        } else {
+          const resp = await fetch('/api/layout')
+          const resu = await resp.json();
+          setLayouts(resu['data'])
+          setSelectedLayout(result['data']['layout_id'])
+          toast({
+            title: "Success",
+            description: (
+              <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                <code className="text-white">{JSON.stringify(result, null, 2)}</code>
+              </pre>
+            ),
+          })
+        }
+      } catch (error) {
         toast({
-          title: "Success",
-          description: "Created new dashboard successfully"
+          title: 'Error fetching data from API',
         })
       }
     })
@@ -78,10 +91,9 @@ export const DashboardDialog = () => {
 
   useEffect(() => {
     const getAllWidgets_ = async () => {
-      const res = await getAllWidgets()
-      if (res){
-        setWidgets(res)
-      }
+      const response = await fetch('/api/widget')
+      const result = await response.json()
+      setWidgets(result['data'])
     }
     if(open){
       setWidgets(null)
@@ -115,17 +127,17 @@ export const DashboardDialog = () => {
                 <WidgetsPreview widgets={widgets} />
                 :
                 <div className="flex flex-col space-y-3">
-                  <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+                  <Skeleton className="h-[250px] w-full rounded-xl" />
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[200px]" />
+                    <Skeleton className="h-8 w-[250px]" />
+                    <Skeleton className="h-8 w-[200px]" />
                   </div>
                 </div>
               }
             </DialogDescription>
-            <Separator className="my" />
+            <Separator className="my-5" />
             <DialogFooter>
-              <div className="mt-5 flex space-x-8 items-center">
+              <div className="flex space-x-8 items-center">
                 <Label> Dashboard Title : </Label>
                 <FormField
                   name="title"

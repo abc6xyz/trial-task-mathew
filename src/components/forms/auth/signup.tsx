@@ -18,8 +18,16 @@ import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
 import { z } from "zod"
-import { signUpWithPassword } from "@/app/actions/auth"
-import { signUpFormWithPasswordSchema as formSchema } from "@/validations/auth"
+
+export const formSchema = z.object({
+  email: z.string().email({
+    message: "Invalid email address."
+  }),
+  password: z.string().min(8, {
+    message: "Password must be longer than 8 characters."
+  }),
+  address: z.string(),
+})
 
 export function SignUpWithPasswordForm(): JSX.Element {
   const { toast } = useToast()
@@ -30,52 +38,34 @@ export function SignUpWithPasswordForm(): JSX.Element {
     defaultValues: {
       email: "",
       password: "",
+      address: "",
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       try {
-        const message = await signUpWithPassword({
-          email: values.email,
-          password: values.password,
-          address: values.address,
-        })
-
-        switch (message) {
-          case "invalid-input":
-            toast({
-              title: "Input is not validate",
-              description:
-                "Please input valid information",
-            })
-            break
-          case "exists":
-            toast({
-              title: "Already exist",
-              description: "Email already exists, please sign in",
-            })
-            break
-          case "success": {
-            toast({
-              title: "Sign up success",
-              description: "You have been successfully signed up",
-            })
-            break
-          }
-          default:
-            toast({
-              title: "Error signing in with password",
-              description: "Please try again",
-              variant: "destructive",
-            })
+        const response = await fetch('/api/user/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({data:values}),
+        });
+        const result = await response.json();
+        if ('error' in result){
+          toast({
+            title: result['error'],
+          })
+        } else {
+          toast({
+            title: "Sign up success",
+            description: "You have been successfully signed up",
+          })
         }
       } catch (error) {
-        console.error(error)
         toast({
-          title: "Something went wrong",
-          description: "Please try again",
-          variant: "destructive",
+          title: 'Error fetching data from API',
         })
       }
     })

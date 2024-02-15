@@ -1,21 +1,15 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useState } from "react";
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-
-import React, { useDeferredValue, useEffect, useState } from "react";
+import { DashboardDialog } from "@/components/dialogs/dashboard"
+import { ChevronRightIcon } from "@radix-ui/react-icons"
+import { cn } from "@/lib/utils"
+import { useSidebar } from "@/hooks/useSidebar";
 import { SideNav } from "./side-nav";
 
-import { useSidebar } from "@/hooks/useSidebar";
-import { ChevronRightIcon } from "@radix-ui/react-icons"
-import { DashboardDialog } from "@/components/dialogs/dashboard"
-import { useDashboard } from "@/providers/dashboardProvider"
-
 export default function Sidebar() {
-  const pathname = usePathname()
   const { isOpen, toggle } = useSidebar()
   const [ status, setStatus ] = useState(false)
   

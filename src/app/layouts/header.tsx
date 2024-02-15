@@ -9,36 +9,54 @@ import { AuthDialog } from "@/components/dialogs/auth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast"
 import { signInByWallet } from "@/lib/utils";
-import { addWalletByUser } from "@/app/actions/user";
 import { MobileSidebar } from "./mobile-sidebar";
 
 export default function Header() {
   const { toast } = useToast()
   const { isConnected, address, connector } = useAccount()
   const { disconnect } = useDisconnect()
-  const { data: session } = useSession()
-  
+  const { status } = useSession()
+
   useEffect(()=>{
     const signInByWallet_ = async (address : string) => {
       const res = await signInByWallet(address)
       if ( res === "success" )
-        toast({ title: "Info",
-          description: "User signed in. \n Email: " + session?.user?.email,
+        toast({
+          title: "User signed in.",
         })
       else
-        toast({ title: "Info",
-          description: "Please signin or signup with your account",
+        toast({
+          title: "Please signin or signup with your account",
         })
     }
     const addWalletByUser_ = async (wallet: {address: string, name: string}) => {
-      const res = await addWalletByUser(wallet, session?.user?.email as string);
-      if (res === "success")
-        toast({ title: "Info",
-          description: "Wallet info is added to your account",
+      try {
+        const response = await fetch('/api/wallet/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({data:wallet}),
+        });
+        const result = await response.json();
+        if ('error' in result){
+          toast({
+            title: result['error'],
+          })
+        } else {
+          toast({
+            title: "New wallet detection",
+            description: result['data']['address'],
+          })
+        }
+      } catch (error) {
+        toast({
+          title: 'Error fetching data from API',
         })
+      }
     }
     if (isConnected && address) {
-      if (session===null) {
+      if (status==='unauthenticated') {
         signInByWallet_(address)
       }
       else {
@@ -48,7 +66,7 @@ export default function Header() {
         })
       }
     }
-  },[isConnected, address, connector, session]);
+  },[isConnected, address, connector, status]);
 
   function handleSignOut(): void {
     disconnect()
@@ -81,7 +99,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
           {
-            session?
+            status === 'authenticated' ?
             <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
             : 
             <AuthDialog />

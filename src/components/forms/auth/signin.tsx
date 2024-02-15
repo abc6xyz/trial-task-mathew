@@ -2,9 +2,9 @@
 
 import React from "react"
 import { useTransition } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,9 +18,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { Icons } from "@/components/icons"
 import { PasswordInput } from "@/components/password-input"
-import { z } from "zod"
-import { signInFormWithPasswordSchema as formSchema } from "@/validations/auth"
 import { signInByPassword } from "@/lib/utils"
+
+const formSchema = z.object({
+  email: z.string().email({
+    message: "Invalid email address."
+  }),
+  password: z.string().min(8, {
+    message: "Password must be longer than 8 characters."
+  })
+})
 
 export function SignInWithPasswordForm(): JSX.Element {
   const { toast } = useToast()

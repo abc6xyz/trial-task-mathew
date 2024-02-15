@@ -1,38 +1,12 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ScrollArea } from "./ui/scroll-area";
-import ProfilePicture from "@/components/widgets/profile/snapshot.png"
 import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import { WidgetItem } from "@/validations/widget";
+import { Widget } from "@prisma/client";
+import { WidgetPreview } from "./widgets";
+import { Label } from "@radix-ui/react-label";
 
-const items = [
-  {
-    id: "recents",
-    label: "Recents",
-  },
-  {
-    id: "home",
-    label: "Home",
-  },
-  {
-    id: "applications",
-    label: "Applications",
-  },
-  {
-    id: "desktop",
-    label: "Desktop",
-  },
-  {
-    id: "downloads",
-    label: "Downloads",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-  },
-] as const
-
-export function WidgetsPreview({widgets}: {widgets: WidgetItem[]}) {
+export function WidgetsPreview({widgets}: {widgets: Widget[]}) {
   const addOrRemoveFromArray = (arr: number[], element:number) => {
     var index = arr.indexOf(element);
     if (index !== -1) {
@@ -46,34 +20,37 @@ export function WidgetsPreview({widgets}: {widgets: WidgetItem[]}) {
     <ScrollArea className="h-[500px] w-full">
       <div className="px-5">
         <FormField
-          name="items"
+          name="widgets"
           render={() => (
-            <FormItem className="space-y-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <FormItem className="space-y-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               { widgets.length?
-                widgets.map((item) => (
+                widgets.map((widget) => (
                   <FormField
-                    key={item.widget_id}
-                    name="items"
+                    key={widget.widget_id}
+                    name="widgets"
                     render={({ field }) => {
                       return (
                         <FormItem
-                          key={item.widget_id}
+                          key={widget.widget_id}
                         >
                           <FormControl>
+                            <div>
                             <Image
-                              src={ProfilePicture}
-                              alt={item.widget_name}
-                              width={150}
-                              height={150}
+                              src={WidgetPreview(widget.widget_id)}
+                              alt={widget.widget_name}
+                              width={300}
+                              height={300}
                               aria-selected={true}
                               className={cn(
-                                "h-auto w-auto object-cover aspect-[3/4] blur-[4px] hover:blur-[0px] hover:cursor-pointer duration-200 rounded-md",
-                                field.value?.includes(item.widget_id) ? "blur-[0px]" : ""
+                                "h-auto w-auto object-cover aspect-[3/2] blur-[4px] hover:blur-[0px] hover:cursor-pointer duration-200 rounded-md",
+                                field.value?.includes(widget.widget_id) ? "blur-[0px]" : ""
                                 )}
-                              onClick={(e)=>{
-                                field.onChange(addOrRemoveFromArray(field.value,item.widget_id))
-                              }}
+                                onClick={(e)=>{
+                                  field.onChange(addOrRemoveFromArray(field.value,widget.widget_id))
+                                }}
                             />
+                            <Label className="flex justify-center">{widget.widget_name}</Label>
+                            </div>
                           </FormControl>
                         </FormItem>
                       )
