@@ -55,7 +55,7 @@ export function AddWidget({onAddCallback}: AddWidgetProps) {
           <div className="space-y-5">
             { widgets.length?
               widgets.map((widget) => (
-                <div className="w-full">
+                <div className="w-full" key={widget.widget_id.toString()}>
                   <Label className="flex justify-center text-xl">{widget.widget_name}</Label>
                   <Image
                     src={WidgetPreview(widget.widget_id)}
