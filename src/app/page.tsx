@@ -27,7 +27,7 @@ export default function Home() {
     if (status === 'authenticated') {
       fetchLayouts()
     }
-  },[status])
+  },[status, setLayouts])
   return (
     <div>
       <Header />
