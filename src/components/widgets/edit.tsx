@@ -18,22 +18,21 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DefaultFormValues, EditFormSchema, WidgetEditForm } from "."
-import { Layout_Widgets } from "@prisma/client"
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { Separator } from "../ui/separator"
+import { useEditWidget } from "@/hooks/useEditWidget"
 
 type EditWidgetProps = {
-  widget: Layout_Widgets;
   saveCallback: (data: any) => void;
 }
 
-export const EditWidget:React.FC<EditWidgetProps> = ({widget, saveCallback}) => {
+export const EditWidget:React.FC<EditWidgetProps> = ({saveCallback}) => {
   const { theme } = useTheme()
-  const [ open, setOpen ] = useState(false)
+  const { isOpen, widget, setOpen } = useEditWidget()
   const [ isPending, startTransition ] = useTransition()
   
-  const formSchema = EditFormSchema(widget.widget_id)
-  const defaultValues = DefaultFormValues(widget.widget_id)
+  const formSchema = EditFormSchema(widget?.widget_id)
+  const defaultValues = DefaultFormValues(widget?.widget_id)
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,16 +42,16 @@ export const EditWidget:React.FC<EditWidgetProps> = ({widget, saveCallback}) => 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       try {
-        saveCallback({id:widget.layout_widget_id, data:values})
+        saveCallback({id:widget?.layout_widget_id, data:values})
       } catch (error) {
         console.error(error)
       }
-      setOpen(false)
+      setOpen(false, undefined)
     })
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={()=>setOpen(false,undefined)}>
       <DialogTrigger asChild>
         <Icons.edit className={cn("absolute inset-x-full -right-[24px] top-[24px] cursor-pointer hover:fill-[#00FF00] z-10000", theme==='dark'&&"fill-[#FFFFFF]")}/>
       </DialogTrigger>
@@ -64,7 +63,9 @@ export const EditWidget:React.FC<EditWidgetProps> = ({widget, saveCallback}) => 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogDescription>
-              <WidgetEditForm widget={widget}/>
+              {
+                widget && <WidgetEditForm widget={widget}/>
+              }
             </DialogDescription>
             <Separator className="my-5" />
             <DialogFooter>

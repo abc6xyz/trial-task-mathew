@@ -3,18 +3,19 @@
 import "/node_modules/react-grid-layout/css/styles.css"
 import "/node_modules/react-resizable/css/styles.css"
 
+import { useTheme } from 'next-themes';
+import { useSidebar } from '@/hooks/useSidebar';
+import { useEditWidget } from "@/hooks/useEditWidget";
 import React, { useCallback, useEffect, useState, useTransition } from 'react';
 import { DeleteDashboard } from '@/components/dialogs/delete-dashboard';
 import { Button } from '@/components/ui/button';
 import { AddWidget } from '@/components/dialogs/add-widget';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSidebar } from '@/hooks/useSidebar';
-import { useTheme } from 'next-themes';
 import { Responsive, WidthProvider, Layout } from 'react-grid-layout';
 import { Layout_Widgets } from '@prisma/client';
 import { toast } from '@/components/ui/use-toast';
-import DashboardWidget, { WidgetEditForm } from '@/components/widgets';
+import DashboardWidget from '@/components/widgets';
 import { Icons } from '@/components/icons';
 import { EditWidget } from '@/components/widgets/edit';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ export default function DashboardPro ({
 
   const { theme } = useTheme()
   const { selectedLayout, layouts } = useSidebar()
+  const { setOpen } = useEditWidget()
   const [ isPending, startTransition ] = useTransition()
 
   const [ isDraggableResizable, setIsDraggableResizable ] = useState(false)
@@ -188,6 +190,10 @@ export default function DashboardPro ({
     [setWidgets]
   );
 
+  function onEditItem(layout_widget_id: number) {
+    setOpen(true, widgets?.find(widget => widget.layout_widget_id === layout_widget_id))
+  }
+
   const saveCallback = (data: any) => {
     const newWidgets = widgets?.map((widget) => {
       if (widget.layout_widget_id === data.id){
@@ -212,13 +218,13 @@ export default function DashboardPro ({
         h: (widget.widget_json as any)?.h,
       }
       return widget && (
-        <div key={data.i} data-grid={data} className="border border-black relative">
+        <div key={data.i} data-grid={data} className={cn("border relative", theme==="dark"?"border-white":"border-black")}>
           <DashboardWidget widget={widget} />
           { isDraggableResizable && 
             <>
               <div className="absolute left-0 top-0 w-full h-full bg-opacity-100 cursor-pointer"></div>
               <Icons.recycleBin className={cn("absolute inset-x-full -right-[24px] top-0 cursor-pointer hover:fill-[#FF0000] z-10000", theme==='dark'&&"fill-[#FFFFFF]")} onClick={() => onRemoveItem(widget.layout_widget_id)} />
-              <EditWidget widget={widget} saveCallback={saveCallback}/>
+              <Icons.edit className={cn("absolute inset-x-full -right-[24px] top-[24px] cursor-pointer hover:fill-[#00FF00] z-10000", theme==='dark'&&"fill-[#FFFFFF]")} onClick={() => onEditItem(widget.layout_widget_id)} />
             </>
           }
         </div>
@@ -325,6 +331,7 @@ export default function DashboardPro ({
         :
         <></>
       }
+      <EditWidget saveCallback={saveCallback}/>
     </ScrollArea>
   );
 };
