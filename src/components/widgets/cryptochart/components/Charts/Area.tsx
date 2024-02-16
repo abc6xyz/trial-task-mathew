@@ -79,7 +79,6 @@ const options: ChartOptions<'line'> = {
 
       // to remove the x-axis grid
       grid: {
-        drawBorder: false,
         display: false,
       },
     },
@@ -91,7 +90,6 @@ const options: ChartOptions<'line'> = {
       // to remove the y-axis grid
       grid: {
         display: false,
-        drawBorder: false,
       },
     },
   },
