@@ -18,6 +18,21 @@ async function main() {
         widget_name: 'RSS Reader',
         widget_description: 'RSS Reader',
       },
+      {
+        widget_id: 2,
+        widget_name: 'Crypto StockChart',
+        widget_description: 'Crypto StockChart',
+      },
+      {
+        widget_id: 3,
+        widget_name: 'Crypto Price Tracker',
+        widget_description: 'Crypto Price Tracker',
+      },
+      {
+        widget_id: 4,
+        widget_name: 'Crypto Portfolio',
+        widget_description: 'Crypto Portfolio',
+      }
     ],
   });
 

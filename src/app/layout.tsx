@@ -15,10 +15,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-      {/* <body className={inter.className}> */}
+      <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SessionProvider>
+          <SessionProvider refetchInterval={60 * 60} refetchOnWindowFocus={false}>
             <Web3Providers>
               <main>{children}</main>
               <Toaster />
