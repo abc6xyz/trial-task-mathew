@@ -99,7 +99,7 @@ export const CryptoPotfolioWidget = () => {
         </TableHeader>
         <TableBody>
           {(portfolio as any)?.assets?.map((asset: any) => (
-            <TableRow>
+            <TableRow key={asset?.asset?.name}>
               <TableCell className="p-1">
                 <div className='flex justify-center'>
                   <img
