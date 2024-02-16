@@ -10,7 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const { status } = useSession()
-  const { setLayouts, selectedLayout } = useSidebar()
+  const { setLayouts, selectedLayout, layouts } = useSidebar()
 
   useEffect(()=>{
     const fetchLayouts = async () => {
@@ -36,7 +36,10 @@ export default function Home() {
         <div className="w-full flex">
           <Sidebar />
           { selectedLayout &&
-            <DashboardPro />
+            <DashboardPro
+              selectedLayout={selectedLayout}
+              layoutName={layouts.find((layout)=>selectedLayout===layout.layout_id)?.layout_name}
+            />
           }
         </div>
         :

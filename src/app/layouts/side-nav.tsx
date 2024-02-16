@@ -23,7 +23,7 @@ export function SideNav() {
               'group relative flex h-12 justify-start',
               selectedLayout === item.layout_id && 'bg-muted font-bold hover:bg-muted',
             )}
-            onClick={()=>setSelectedLayout(item.layout_id)}
+            onClick={()=>{if(selectedLayout!==item.layout_id)setSelectedLayout(item.layout_id)}}
           >
             <Icons.dashboard className={cn('h-5 w-5')} />
             <span

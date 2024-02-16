@@ -40,9 +40,7 @@ export default function Header() {
         });
         const result = await response.json();
         if ('error' in result){
-          toast({
-            title: result['error'],
-          })
+          console.log(result['error']+' : /api/wallet/create')
         } else {
           toast({
             title: "New wallet detection",
@@ -50,9 +48,7 @@ export default function Header() {
           })
         }
       } catch (error) {
-        toast({
-          title: 'Error fetching data from API',
-        })
+        console.log('Error fetching data from API : /api/wallet/create')
       }
     }
     if (isConnected && address) {

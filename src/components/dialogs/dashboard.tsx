@@ -72,6 +72,8 @@ export const DashboardDialog = () => {
           const resu = await resp.json();
           setLayouts(resu['data'])
           setSelectedLayout(result['data']['layout_id'])
+          setOpen(false)
+          form.reset()
           toast({
             title: "Success",
             description: (
