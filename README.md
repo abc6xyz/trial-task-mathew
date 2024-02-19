@@ -20,8 +20,6 @@
 ### Bonus:  
 - T3 stack (not mandatory)  
 
-[`📃 Task documentation`](https://docs.google.com/document/d/1511Go53j_Z9glacc6uY-DWdZundm5uSorLUAZ4HsUNo/edit?usp=sharing) 
-
 ## Getting Started
 
 ### 👉 **Milestone 1**
